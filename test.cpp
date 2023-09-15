@@ -1,196 +1,244 @@
+// #include<bits/stdc++.h>
+#include <algorithm>
+#include <array>
+#include <bitset>
+#include <cassert>
+#include <cctype>
+#include <cerrno>
+#include <cfloat>
+#include <ciso646>
+#include <climits>
+#include <clocale>
+#include <cmath>
+#include <complex>
+#include <csetjmp>
+#include <csignal>
+#include <cstdarg>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <cwchar>
+#include <cwctype>
+#include <deque>
+#include <exception>
+#include <fstream>
+#include <functional>
+#include <iomanip>
+#include <ios>
+#include <iosfwd>
 #include <iostream>
-#include <vector>
+#include <istream>
+#include <iterator>
 #include <limits>
+#include <list>
+#include <locale>
+#include <map>
+#include <memory>
+#include <new>
+#include <numeric>
+#include <ostream>
+#include <queue>
+#include <random>
+#include <regex>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <stdexcept>
+#include <streambuf>
+#include <string>
+#include <strstream>
+#include <tuple>
+#include <typeinfo>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <valarray>
+#include <vector>
+
 using namespace std;
 
-const int INF = 1e9 + 7;
+typedef pair<int, int> pii;
+const int N = 1e5 + 5;
+const int INF = 1e9 + 10;
+vector<pii> adj[N];
+vector<int> dist(N, INF);
+vector<bool> visited(N);
 
-class Edge
+void dijkstra(int source)
 {
-public:
-    int u, v, w;
-    Edge(int a = 0, int b = 0, int w = 0) : u(a), v(b), w(w) {}
-};
+    priority_queue<pii, vector<pii>, greater<pii>> pq;
 
-int n, e;
-vector<Edge> edges(e);
+    dist[source] = 0;
+    pq.push({dist[source], source});
 
-bool bellmanFord(int n, int s, int dest)
-{
-    vector<int> dist(n + 1, INF);
-    dist[s] = 0;
-
-    for (int i = 0; i < n - 1; i++)
+    while (!pq.empty())
     {
-        for (const Edge &edge : edges)
+        int u = pq.top().second;
+        pq.pop();
+
+        visited[u] = true;
+
+        for (pii vpair : adj[u])
         {
-            if (dist[edge.u] != INF && dist[edge.u] + edge.w < dist[edge.v])
+            int v = vpair.first;
+            int w = vpair.second;
+
+            if (visited[v])
+                continue;
+
+            // kaaj
+            if (dist[v] > dist[u] + w)
             {
-                dist[edge.v] = dist[edge.u] + edge.w;
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
             }
         }
     }
-
-    bool nagCycle = false;
-    for (const Edge &edge : edges)
-    {
-        if (dist[edge.u] != INF && dist[edge.u] + edge.w < dist[edge.v])
-        {
-            nagCycle = true;
-            break;
-        }
-    }
-
-    if (nagCycle)
-    {
-        cout << "Negative Cycle Detected" << endl;
-    }
-    else if (dist[dest] == INF)
-    {
-        cout << "Not Possible" << endl;
-    }
-    else
-    {
-        cout << dist[dest] << endl;
-    }
-
-    return nagCycle;
 }
 
 int main()
 {
 
-    cin >> n >> e;
+    int n, m;
+    cin >> n >> m;
 
-    for (int i = 0; i < e; i++)
+    for (int i = 0; i < m; i++)
     {
-        cin >> edges[i].u >> edges[i].v >> edges[i].w;
+        int u, v, w;
+        cin >> u >> v >> w;
+
+        adj[u].push_back({v, w}); // undirected
+
+        adj[v].push_back({u, w}); // directed
     }
 
-    int s;
-    cin >> s;
+    // O(n+m)
+    dijkstra(1);
 
-    int test;
-    cin >> test;
-
-    bool nagCycle = false;
-
-    while (test--)
+    for (int i = 1; i <= n; i++)
     {
-        int dest;
-        cin >> dest;
-
-        if (bellmanFord(n, s, dest) && !nagCycle)
-        {
-            nagCycle = true;
-            break;
-        }
+        cout << "Distance " << i << ": " << dist[i] << endl;
     }
 
     return 0;
 }
 
 /*
-check this problem Statement again, also my code, my code is handling all this test casses perfecly, but for some reason not passed all test cases in online platform, so please make all corner casses correct and solve this.
+check this problem Statement, also my code, my code is handling all this test casses perfecly, but for some reason not passed all test cases in online platform, so please make all corner casses correct and solve this.
 
 my code :
 
 
 Problem Statement
 
-You will be given N numbers of nodes, E numbers of edges in a graph. For each edge you will be given A, B and W which means there is a connection from A to B for which you need to give W cost. The value of nodes could be from 1 to N.
+You'll be given a graph of N nodes and E edges. For each edge, you'll be given A, B and W which means there is an edge from A to B which will cost W. Also, you'll be given Q queries, for each query you'll be given X and Y, where X is the source and Y is the destination. You need to print the minimum cost from A to B for each query. If there is no connection between X and Y, print -1.
 
-You will be given a source node S. Then you will be given a test case T, for each test case you will be given a destination node D. You need to tell the minimum cost from source node to destination. If there is no possible path from S to D then print Not Possible.
-
-Note: If there is a negative weight cycle in the graph, then no answer would be correct. So print one line only - "Negative Cycle Detected".
+Note: There can be multiple edges from one node to another.
 
 Input Format
 
 First line will contain N and E.
 Next E lines will contain A, B and W.
-Next line will contain source node S.
-Next line will contain T, the number of test cases.
-For each test case, you will get D.
+After that you'll get Q.
+Next Q queries will contain X and Y.
 Constraints
 
-1 <= N <= 1000
-1 <= E <= 1000
-1 <= S <= N
-1 <= T <= 1000
-1 <= D <= N
--10^9 <= W <= 10^9
+1 <= N <= 100
+1 <= E <= 10^5
+1 <= A, B <= N
+1 <= W <= 10^9
+1 <= Q <= 10^5
+1 <= X, Y <= N
 Output Format
 
-Output the minimum cost for each test case.
+Output the minimum cost for each query.
+
+Sample Input 0 :
+4 7
+1 2 10
+2 3 5
+3 4 2
+4 2 3
+3 1 7
+2 1 1
+1 4 4
+6
+1 2
+4 1
+3 1
+1 4
+2 4
+4 2
+
+Sample Output 0 :
+7
+4
+6
+4
+5
+3
 
 Sample Input 1 :
-5 7
+4 4
+1 2 4
+2 3 4
+3 1 2
 1 2 10
-1 3 -2
-3 2 1
-2 4 7
-3 4 -3
-4 5 5
-2 5 2
-1
-5
-1
-2
-3
-4
-5
+6
+1 2
+2 1
+1 3
+3 1
+2 3
+3 2
 
 Sample Output 1 :
-0
--1
--2
--5
-0
+4
+6
+8
+2
+4
+6
 
 
-Sample Input 2 :
-5 7
+
+
+for this input :
+4 7
 1 2 10
-1 3 -2
-3 2 1
-2 4 7
-3 4 -3
-4 5 5
-2 5 2
-5
-5
-1
-2
-3
+2 3 5
+3 4 2
+4 2 3
+3 1 7
+2 1 1
+1 4 4
+6
+1 2
+4 1
+3 1
+1 4
+2 4
+4 2
+
+my expected output is :
+7
+4
+6
 4
 5
-
-Sample Output 2 :
-Not Possible
-Not Possible
-Not Possible
-Not Possible
-0
-
-
-Sample Input 3 :
-5 8
-1 2 -2
-1 3 -10
-3 2 1
-2 4 7
-4 3 -3
-4 5 5
-2 5 2
-4 1 1
-1
-5
-1
-2
 3
+
+but receiving this output :
+10
+4
+7
 4
 5
+3
 
-Sample Output 3 :
-Negative Cycle Detected
+check this code, can I avoid use of emplace_back here? :
+
 */
