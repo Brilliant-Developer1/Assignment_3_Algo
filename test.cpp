@@ -134,54 +134,50 @@ my code :
 
 Problem Statement
 
-You'll be given a graph of N nodes and E edges. For each edge, you'll be given A, B and W which means there is an edge from A to B which will cost W. Also, you'll be given Q queries, for each query you'll be given X and Y, where X is the source and Y is the destination. You need to print the minimum cost from A to B for each query. If there is no connection between X and Y, print -1.
+You have just opened a dish cable business and you want to connect your dish lines in your area. In your area there are N buldings and E roads. The roads are two way obviously. In each road there is a cost of connecting the cables. You want to connect all buldings in such a way that there is connection from any building to another, not necessary to be directly.
 
-Note: There can be multiple edges from one node to another.
+As you are a businessman, you want the total cost to be minimum. Can you tell the minimum total cost to do the work?
+
+Note: There can be multiple road from one building to another. If it is not possible to connect all the building, print -1.
 
 Input Format
 
 First line will contain N and E.
-Next E lines will contain A, B and W.
-After that you'll get Q.
-Next Q queries will contain X and Y.
+Next E lines will contain A, B and W which means there is a connection in between A and B where the cost for connecting the cable is W.
 Constraints
 
-1 <= N <= 100
-1 <= E <= 10^5
+1 <= N, E <= 10^5
 1 <= A, B <= N
 1 <= W <= 10^9
-1 <= Q <= 10^5
-1 <= X, Y <= N
 Output Format
 
-Output the minimum cost for each query.
+Output the minimum cost.
 
 Sample Input 0 :
-4 7
+5 7
 1 2 10
-2 3 5
+1 3 5
+3 2 4
+2 4 1
 3 4 2
-4 2 3
-3 1 7
-2 1 1
-1 4 4
-6
-1 2
-4 1
-3 1
-1 4
-2 4
-4 2
+4 5 3
+1 5 2
 
 Sample Output 0 :
-7
-4
-6
-4
-5
-3
+8
 
 Sample Input 1 :
+3 2
+1 2 10
+2 1 2
+
+Sample Output 1 :
+-1
+
+
+
+
+for this input :
 4 4
 1 2 4
 2 3 4
@@ -195,7 +191,7 @@ Sample Input 1 :
 2 3
 3 2
 
-Sample Output 1 :
+my expected output is :
 4
 6
 8
@@ -203,41 +199,13 @@ Sample Output 1 :
 4
 6
 
-
-
-
-for this input :
-4 7
-1 2 10
-2 3 5
-3 4 2
-4 2 3
-3 1 7
-2 1 1
-1 4 4
-6
-1 2
-4 1
-3 1
-1 4
-2 4
-4 2
-
-my expected output is :
-7
-4
-6
-4
-5
-3
-
 but receiving this output :
-10
 4
-7
 4
-5
-3
+2
+2
+4
+4
 
 check this code, can I avoid use of emplace_back here? :
 
